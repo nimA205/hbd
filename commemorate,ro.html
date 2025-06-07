@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Birthday!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes float {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      .emoji {
+        position: absolute;
+        font-size: 2rem;
+        animation: float linear forwards;
+        user-select: none;
+        pointer-events: none;
+      }
+
+      .cake {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        opacity: 0;
+      }
+
+      .phase {
+        display: none;
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .active-phase {
+        display: block;
+      }
+
+      .gift-box {
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .gift-box:hover {
+        transform: scale(1.05);
+      }
+
+      .gift-box:active {
+        transform: scale(0.95);
+      }
+
+      .gift-open {
+        animation: shake 0.5s ease-in-out;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+        25% {
+          transform: rotate(-5deg);
+        }
+        75% {
+          transform: rotate(5deg);
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gradient-to-b from-pink-200 to-purple-300 min-h-screen overflow-hidden flex flex-col items-center justify-center p-4 font-sans"
+  >
+    <div
+      id="confetti-container"
+      class="fixed inset-0 overflow-hidden pointer-events-none"
+    ></div>
+
+    <!-- Phase 1: Birthday Greeting -->
+    <div
+      id="phase1"
+      class="phase active-phase text-center max-w-2xl bg-white bg-opacity-80 rounded-3xl p-8 shadow-2xl backdrop-blur-sm"
+    >
+      <h1
+        class="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mb-6"
+      >
+        Happy Birthday!
+      </h1>
+
+      <div class="cake text-6xl mb-8">🎂</div>
+
+      <p class="text-xl md:text-2xl text-gray-700 mb-6">
+        Wishing you an amazing day filled with joy, laughter, and wonderful
+        surprises!
+      </p>
+
+      <div class="flex justify-center space-x-4 mb-8">
+        <button
+          onclick="startEmojiRain()"
+          class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105"
+        >
+          Make it Rain! 🌈
+        </button>
+        <button
+          onclick="createConfetti()"
+          class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105"
+        >
+          Confetti! 🎊
+        </button>
+      </div>
+
+      <button
+        onclick="nextPhase()"
+        class="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105"
+      >
+        Continue to Your Gift! 🎁
+      </button>
+    </div>
+
+    <!-- Phase 2: Gift Presentation -->
+    <div
+      id="phase2"
+      class="phase text-center max-w-2xl bg-white bg-opacity-80 rounded-3xl p-8 shadow-2xl backdrop-blur-sm"
+    >
+      <h1
+        class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mb-6"
+      >
+        Your Special Gift
+      </h1>
+
+      <div class="mb-8">
+        <p class="text-xl md:text-2xl text-gray-700 mb-6">
+          I have something special for you! Click on the gift box to open it.
+        </p>
+
+        <div id="giftBox" class="gift-box text-8xl my-8" onclick="openGift()">
+          🎁
+        </div>
+      </div>
+
+      <button
+        onclick="prevPhase()"
+        class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105 mr-4"
+      >
+        Go Back
+      </button>
+    </div>
+
+    <!-- Phase 3: Gift Reveal -->
+    <div
+      id="phase3"
+      class="phase text-center max-w-2xl bg-white bg-opacity-80 rounded-3xl p-8 shadow-2xl backdrop-blur-sm"
+    >
+      <h1
+        class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mb-6"
+      >
+        Surprise!
+      </h1>
+
+      <div class="mb-8">
+        <div class="text-8xl my-8 animate-bounce">🎉</div>
+
+        <p class="text-xl md:text-2xl text-gray-700 mb-6">
+          Your gift is...
+          <span class="font-bold text-pink-600"
+            >an unforgettable experience!</span
+          >
+        </p>
+
+        <div
+          class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-6 text-left"
+        >
+          <p class="text-lg text-yellow-800">
+            "The best things in life aren't things. The real gift is the time we
+            spend together and the memories we create."
+          </p>
+        </div>
+
+        <p class="text-lg text-gray-600">
+          Let's plan something amazing to celebrate your special day!
+        </p>
+      </div>
+
+      <div class="flex justify-center space-x-4">
+        <button
+          onclick="prevPhase()"
+          class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105"
+        >
+          Go Back
+        </button>
+        <button
+          onclick="nextPhase()"
+          class="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105"
+        >
+          Final Message
+        </button>
+      </div>
+    </div>
+
+    <!-- Phase 4: Final Message -->
+    <div
+      id="phase4"
+      class="phase text-center max-w-2xl bg-white bg-opacity-80 rounded-3xl p-8 shadow-2xl backdrop-blur-sm"
+    >
+      <h1
+        class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mb-6"
+      >
+        One More Thing...
+      </h1>
+
+      <div class="mb-8">
+        <div class="text-6xl my-8">❤️</div>
+
+        <p class="text-xl md:text-2xl text-gray-700 mb-6">
+          You're amazing and deserve the very best!
+        </p>
+
+        <div class="bg-blue-100 border-l-4 border-blue-500 p-4 mb-6 text-left">
+          <p class="text-lg text-blue-800">
+            "Count your life by smiles, not tears. Count your age by friends,
+            not years."
+          </p>
+        </div>
+
+        <p class="text-lg text-gray-600">
+          Wishing you a year filled with happiness, success, and love!
+        </p>
+      </div>
+
+      <div class="flex justify-center space-x-4">
+        <button
+          onclick="prevPhase()"
+          class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-full transition-all transform hover:scale-105"
+        >
+          Go Back
+        </button>
+        <button
+          onclick="restartPhases()"
+          class="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full transition-all transform hover:scale-105"
+        >
+          Start Over
+        </button>
+      </div>
+    </div>
+
+    <script>
+      const emojis = [
+        "🎉",
+        "🎈",
+        "🎁",
+        "✨",
+        "🥳",
+        "🎊",
+        "❤️",
+        "🌸",
+        "🍰",
+        "🎆",
+        "🦄",
+        "🌈",
+      ];
+      let isRaining = false;
+      let currentPhase = 1;
+      const totalPhases = 4;
+
+      // Click anywhere to add emojis
+      document.addEventListener("click", (e) => {
+        createEmoji(e.clientX, e.clientY);
+      });
+
+      function createEmoji(x, y) {
+        const emoji = document.createElement("div");
+        emoji.className = "emoji";
+        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        emoji.style.left = `${x}px`;
+        emoji.style.top = `${y}px`;
+        emoji.style.animationDuration = `${Math.random() * 3 + 2}s`;
+        document.body.appendChild(emoji);
+
+        // Remove emoji after animation completes
+        setTimeout(() => {
+          emoji.remove();
+        }, 5000);
+      }
+
+      function startEmojiRain() {
+        if (isRaining) return;
+        isRaining = true;
+
+        const rainInterval = setInterval(() => {
+          for (let i = 0; i < 5; i++) {
+            const x = Math.random() * window.innerWidth;
+            createEmoji(x, -50);
+          }
+        }, 300);
+
+        // Stop after 10 seconds
+        setTimeout(() => {
+          clearInterval(rainInterval);
+          isRaining = false;
+        }, 10000);
+      }
+
+      function createConfetti() {
+        const colors = [
+          "#ff0000",
+          "#00ff00",
+          "#0000ff",
+          "#ffff00",
+          "#ff00ff",
+          "#00ffff",
+        ];
+        const container = document.getElementById("confetti-container");
+
+        for (let i = 0; i < 100; i++) {
+          const confetti = document.createElement("div");
+          confetti.className = "confetti";
+          confetti.style.backgroundColor =
+            colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.left = `${Math.random() * 100}vw`;
+          confetti.style.top = "-10px";
+          confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+          // Random shape
+          if (Math.random() > 0.5) {
+            confetti.style.borderRadius = "50%";
+          }
+
+          // Random size
+          const size = Math.random() * 10 + 5;
+          confetti.style.width = `${size}px`;
+          confetti.style.height = `${size}px`;
+
+          container.appendChild(confetti);
+
+          // Animate
+          const animationDuration = Math.random() * 3 + 2;
+          confetti.style.transition = `all ${animationDuration}s linear`;
+          confetti.style.opacity = "1";
+
+          setTimeout(() => {
+            confetti.style.top = "100vh";
+            confetti.style.opacity = "0";
+            confetti.style.transform = `rotate(${
+              Math.random() * 360
+            }deg) translateX(${Math.random() * 100 - 50}px)`;
+          }, 10);
+
+          // Remove after animation
+          setTimeout(() => {
+            confetti.remove();
+          }, animationDuration * 1000);
+        }
+      }
+
+      // Phase navigation functions
+      function nextPhase() {
+        if (currentPhase >= totalPhases) return;
+
+        document
+          .getElementById(`phase${currentPhase}`)
+          .classList.remove("active-phase");
+        currentPhase++;
+        document
+          .getElementById(`phase${currentPhase}`)
+          .classList.add("active-phase");
+
+        // Special effects for certain phases
+        if (currentPhase === 3) {
+          createConfetti();
+        }
+      }
+
+      function prevPhase() {
+        if (currentPhase <= 1) return;
+
+        document
+          .getElementById(`phase${currentPhase}`)
+          .classList.remove("active-phase");
+        currentPhase--;
+        document
+          .getElementById(`phase${currentPhase}`)
+          .classList.add("active-phase");
+      }
+
+      function restartPhases() {
+        document
+          .getElementById(`phase${currentPhase}`)
+          .classList.remove("active-phase");
+        currentPhase = 1;
+        document
+          .getElementById(`phase${currentPhase}`)
+          .classList.add("active-phase");
+        createConfetti();
+      }
+
+      // Gift opening function
+      function openGift() {
+        const giftBox = document.getElementById("giftBox");
+        giftBox.classList.add("gift-open");
+
+        setTimeout(() => {
+          giftBox.textContent = "🎉";
+          createConfetti();
+
+          // Auto proceed to next phase after 2 seconds
+          setTimeout(() => {
+            nextPhase();
+          }, 2000);
+        }, 500);
+      }
+    </script>
+  </body>
+</html>
